@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<context:annotation-config></context:annotation-config>
+<context:component-scan base-package="com.cg.controller"></context:component-scan>
+<context:component-scan base-package="com.cg.domain"></context:component-scan>
+<context:component-scan base-package="com.cg.repository"></context:component-scan>
+<context:component-scan base-package="com.cg.service"></context:component-scan>
+
+<jpa:repositories base-package="com.cg.repository"></jpa:repositories>
+
+<bean id="EntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml"></property>
+<property name="persistenceUnitName" value="capstore"></property>
+<property name="dataSource" ref="datasource"></property>
+<property name="jpaVendorAdapter" ref="jpavendoradaptor"></property>
+<property name="jpaDialect" ref="jpadialect"></property>
+<property name="jpaPropertyMap">
+	<map>
+		<entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"></entry>
+		<entry key="show_sql" value="true"></entry>
+		<entry key="hibernate.hbm2ddl.auto" value="update"></entry>
+	</map>
+</property>
+</bean>
+<bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+<property name="url" value="jdbc:mysql://localhost:3306/capstoremymodule"></property>
+<property name="username" value="root"></property>
+<property name="password" value="password"></property>
+</bean>
+
+<bean id="jpavendoradaptor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+<property name="showSql" value="true"></property>
+</bean>
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<property name="prefix" value="/WEB-INF/JSP/"></property>
+	<property name="suffix" value=".jsp"></property>
+</bean>
+<bean id="jpadialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect">
+</bean>
+
+<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+<property name="dataSource" ref="datasource"></property>
+<property name="jpaDialect" ref="jpadialect"></property>
+<property name="entityManagerFactory" ref="EntityManagerFactory"></property>
+</bean>
+
+
+<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	<property name="dataSource" ref="datasource"></property>
+	<property name="hibernateProperties">
+		<map>
+		<entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"></entry>
+		<entry key="show_sql" value="true"></entry>
+		<entry key="hibernate.hbm2ddl.auto" value="update"></entry>
+	</map>
+	</property>
+</bean>
+
+
+
+<tx:annotation-driven transaction-manager="transactionManager"/>
+<mvc:annotation-driven/>
+<mvc:default-servlet-handler/>
+<mvc:resources location="file:///D:/Albums/" mapping="/Albums/**"/>
+
+<util:properties id="albumResource" location="classpath:resources.properties"></util:properties>
+</beans>
